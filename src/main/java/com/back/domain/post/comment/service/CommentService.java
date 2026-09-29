@@ -20,8 +20,6 @@ public class CommentService {
     }
 
     public Comment create(String postId, String content, String author) {
-        postService.findById(postId);
-
         Comment comment = new Comment(postId, content, author);
         return commentRepository.save(comment);
     }

@@ -34,6 +34,9 @@ public class ApiV1CommentController {
             @PathVariable String postId,
             @RequestBody @Valid CreateCommentRequest request
     ) {
+        // Post 존재 여부 확인
+        postService.findById(postId);
+
         Comment comment = commentService.create(
                 postId,
                 request.content,
@@ -47,5 +50,15 @@ public class ApiV1CommentController {
         // Post 존재 여부 확인
         postService.findById(postId);
         return commentService.findByPostId(postId);
+    }
+
+    @GetMapping("/{id}")
+    public Comment findById(
+            @PathVariable String postId,
+            @PathVariable String id
+    ) {
+        // Post 존재 여부 확인
+        postService.findById(postId);
+        return commentService.findById(id);
     }
 }
