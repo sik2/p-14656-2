@@ -106,4 +106,22 @@ public class BaseInitData {
             log.debug("조회된 Comment: {}", fetchedComment);
         }
     }
+
+    private void work9(){
+        log.debug("Post 당 Comment 조회");
+
+        for (int i = 1; i <= 5; i++) {
+            Post post = postService.create("Post for Comment " + i, "Content for post " + i, "Author" + i);
+            String content = "This is a comment number " + i + " for post " + post.getId();
+            String author = "Commenter" + i;
+            var comment = commentService.create(post.getId(), content, author);
+            log.debug("Created Comment: {}", comment);
+        }
+
+        for (Post post : postService.findAll()) {
+            var comments = commentService.findByPostId(post.getId());
+            log.debug("Post ID: {} 에 대한 Comments: {}", post.getId(), comments);
+        }
+        log.debug("Comment 조회 완료");
+    }
 }
