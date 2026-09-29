@@ -1,6 +1,7 @@
 package com.back.domain.post.comment.controller;
 
 import com.back.BaseTest;
+import com.back.domain.post.comment.document.Comment;
 import com.back.domain.post.post.document.Post;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,8 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -102,4 +104,48 @@ public class ApiV1CommentControllerTests extends BaseTest {
                 .andExpect(jsonPath("postId").value(post.getId()))
                 .andExpect(jsonPath("id").isNotEmpty());
     }
+
+    private Comment createTestComment(String postId) throws Exception {
+        String response = mockMvc.perform(
+                        post("/api/v1/posts/{postId}/comments", postId)
+                                .contentType("application/json")
+                                .content(
+                                        objectMapper.writeValueAsBytes(
+                                                Map.of(
+                                                        "content", "Test Comment Content",
+                                                        "author", "Test Comment Author"
+                                                )
+                                        )
+                                )
+                ).andExpect(status().isCreated())
+                .andReturn().getResponse()
+                .getContentAsString();
+
+        return objectMapper.readValue(response, Comment.class);
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/posts/{postId}/comments - 실패 (존재하지 않는 postId)")
+    void t4() throws Exception {
+        mockMvc.perform(
+                get("/api/v1/posts/{postId}/comments", "nonexistent-post-id")
+                        .contentType("application/json")
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/posts/{postId}/comments - 성공")
+    void t5() throws Exception {
+        Post post = createTestPost();
+        createTestComment(post.getId());
+        createTestComment(post.getId());
+
+        mockMvc.perform(
+                        get("/api/v1/posts/{postId}/comments", post.getId())
+                                .contentType("application/json")
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+
 }
