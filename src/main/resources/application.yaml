@@ -10,3 +10,6 @@ logging:
       back: debug
 server:
   port: 8080
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
