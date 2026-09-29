@@ -2,6 +2,7 @@ package com.back.domain.post.comment.service;
 
 import com.back.domain.post.comment.document.Comment;
 import com.back.domain.post.comment.repository.CommentRepository;
+import com.back.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,5 +24,9 @@ public class CommentService {
 
     public List<Comment> findAll() {
         return commentRepository.findAll();
+    }
+
+    public Comment findById(String id) {
+        return commentRepository.findById(id).orElseThrow(() -> new NotFoundException("Comment not found with id: " + id));
     }
 }
