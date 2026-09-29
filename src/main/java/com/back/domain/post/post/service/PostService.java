@@ -11,7 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class PostService {
+public class PostService{
     private final PostRepository postRepository;
 
     public long count() {
@@ -40,7 +40,7 @@ public class PostService {
         if (content != null){
             post.setContent(content);
         }
-        post.setLastModifiedAt(java.time.OffsetDateTime.now());
+
         return postRepository.save(post);
     }
 
